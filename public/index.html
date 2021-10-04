@@ -1,0 +1,109 @@
+<html lang="en">
+    <head>
+        <title>Hypixel Friends List</title>
+
+        <style>
+            body {
+                background-color: cadetblue;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+            }
+
+            input {
+                margin-left: 25px;
+                height: 30px;
+                outline: none;
+                border: none;
+                border-radius: 5px;
+                margin-top: 10px;
+                padding: 5px;
+            }
+            
+            h1 {
+                margin-left: 25px;
+                margin-top: 10px;
+            }
+            h4 {
+                margin-left: 25px;
+            }
+
+            .note {
+                margin-left: 25px;
+            }
+
+            ::selection {
+                background: rgb(20, 91, 93);
+            }
+            ::-moz-selection {
+                background: rgb(20, 91, 93);
+            }
+
+            #friends {
+                margin-left: 25px;
+                margin-top: 25px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <h1>Hypixel Online Friends List</h1>
+        <h4>A list of your online hypixel friends</h4>
+        <p class="note">Note: Glitches may occur due to a limit on Hypixel api calls</p>
+
+        <form id="ign-form" onsubmit="displayFriend(event);" action="#">
+            <input id="ign-input" placeholder="minecraft username"></input>
+        </form>
+
+        <br>
+
+        <div id="friends">
+            
+        </div>
+
+        <script>
+            function displayFriend(e) {
+                e.preventDefault();
+
+                let friendign = document.getElementById('ign-input').value;
+                let friendDiv = document.getElementById('friends');
+                
+                document.getElementById('ign-form').remove();
+
+                if (friendign == null || friendign == '') return;
+
+                friendDiv.innerHTML += `<p>loading...</p>`;
+
+                getFriends(friendign).then((friends) => {
+                    friendDiv.innerHTML = '';
+
+                    for (let x = 0; x < friends.length; x++) {
+                        if (friendDiv.innerHTML.includes(`<p>${friends[x]}</p>`)) continue;
+
+                        friendDiv.innerHTML += `<p>${friends[x]}</p>`;
+                    }
+                });
+            }
+            
+
+            async function getFriends(ign) {
+                const body = {
+                    player: ign
+                }
+                const settings = {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+
+                let response = await fetch('/friends', settings);
+                
+                if (!response.ok) return ['error'];
+
+                let data = await response.json();
+                return data;
+            }
+        </script>
+    </body>
+</html>
