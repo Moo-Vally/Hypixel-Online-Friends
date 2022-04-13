@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const Hypixel = require('hypixel-api-reborn');
 const Mojang = require('mojang-api-js');
 const mojang = new Mojang();
-const hypixel = new Hypixel.Client('516cf525-6d40-406a-b463-673a1e668c24')
+const hypixel = new Hypixel.Client('HYPIXEL-API-KEY')
 const app = express();
 const port = 3000;
 
@@ -25,13 +25,9 @@ app.post('/friends', (req, res) => {
 
     hypixel.getFriends(req.body.player).then(friends => {
         for (let x = 0; x < friends.length; x++) {
-            hypixel.getStatus(friends[x].uuid).then(status => {
-                if (status.online) {
-                    getNameFromUUID(friends[x].uuid).then(friendIgn => {
-                        onlineFriends.push(friendIgn.name);
-                    }).catch(() => {
-                        res.send(['error fetching ign from uuid']);
-                    });
+            hypixel.getPlayer(friends[x].uuid).then(player => {
+                if (player.isOnline) {
+                    onlineFriends.push(player.nickname);
                 }
 
                 if (x == friends.length - 1) {
